@@ -1,0 +1,24 @@
+@compiler >= 4
+
+contract Moviedatabase =
+   record state  = 
+      { movielist : map(address, movies) }
+
+   record movies =
+      { name : string,
+       genre  : string,
+       year  : int }
+
+   entrypoint init() = { movielist = {} }
+
+   stateful entrypoint add_movies(movies_address: address, name': string, genre': string, year: int) =
+      let new_movies : movies =
+         { name = name',
+           genre = genre',
+           year = year }
+      put(state{ movielist[movies_address] = new_movies })
+
+   entrypoint get_movies(movies_address : address) : movies = 
+      switch(Map.lookup(movies_address, state.movielist))
+         None => abort("No data for that movies")
+         Some(movies_found) => movies_found
